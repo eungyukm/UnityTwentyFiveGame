@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,20 +11,113 @@ public class ButtonGenerator : MonoBehaviour
 
     [SerializeField] private GameObject buttonObj;
 
-    private List<GameObject> buttonList = new List<GameObject>();
-    
+    private List<GameObject> buttonObjList = new List<GameObject>();
+
+    [SerializeField] private Button[] btnArray;
+
+    private GiveRandomNumber giveRandomNumber;
+
+    private int randomNumber;
+
+
     private void Awake()
     {
-        for(int col = 0; col < colCount; col++)
+        Init();
+
+        CreateButton();
+
+        SetUPButtonText();
+
+        SetBtnArray();
+
+        AddButtonClickEventListener();
+    }
+
+    private void SetBtnArray()
+    {
+        btnArray = new Button[buttonObjList.Count];
+
+        for(int i=0; i<buttonObjList.Count; i++)
         {
-            for(int row =0; row < rowCount; row++)
+            btnArray[i] = buttonObjList[i].GetComponent<Button>();
+        }
+    }
+
+    private void AddButtonClickEventListener()
+    {
+        for(int i=0; i < btnArray.Length; i++)
+        {
+            int rand = giveRandomNumber.deployedRandomNumbers[i];
+            int btnIndex = i;
+            btnArray[i].onClick.AddListener(delegate { RandomNumberButtonClicked(btnIndex, rand); });
+        }
+    }
+
+    private void RandomNumberButtonClicked(int btnIndex, int rand)
+    {
+        Debug.Log("btn Index : " + btnIndex);
+        Debug.Log("rand :" + rand);
+        btnArray[btnIndex].GetComponent<Image>().color = Color.red;
+    }
+
+    private void Init()
+    {
+        giveRandomNumber = GetComponent<GiveRandomNumber>();
+    }
+
+    private void CreateButton()
+    {
+        for (int col = 0; col < colCount; col++)
+        {
+            for (int row = 0; row < rowCount; row++)
             {
                 GameObject btnObj = Instantiate(buttonObj);
                 btnObj.transform.parent = transform;
-                buttonList.Add(btnObj);
+                buttonObjList.Add(btnObj);
             }
         }
     }
+
+    private void SetUPButtonText()
+    {
+        giveRandomNumber.DeployedRandomNumbersRemoveAll();
+        for(int i=0; i< buttonObjList.Count; i++)
+        {
+            randomNumber = giveRandomNumber.CreateRandomNumber(colCount * rowCount);
+            Text btnText = buttonObjList[i].transform.GetChild(0).GetComponent<Text>();
+            if (i == 0)
+            {
+                SetButtonText(randomNumber, btnText);
+            }
+            else
+            {
+                RecursiveDuplicateCheck(randomNumber);
+                SetButtonText(randomNumber, btnText);
+            }
+        }
+    }
+
+    private void RecursiveDuplicateCheck(int rand)
+    {
+        if(!giveRandomNumber.IsDuplicateNumber(rand))
+        {
+            return;
+        }
+        randomNumber = giveRandomNumber.CreateRandomNumber(colCount * rowCount);
+        RecursiveDuplicateCheck(randomNumber);
+    }
+
+    private void SetButtonText(int randomNumber, Text btnText)
+    {
+        btnText.text = randomNumber.ToString();
+        SaveRandomNumber(randomNumber);
+    }
+
+    private void SaveRandomNumber(int rand)
+    {
+        giveRandomNumber.deployedRandomNumbers.Add(rand);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +127,9 @@ public class ButtonGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.D))
+        {
+            SetUPButtonText();
+        }
     }
 }
