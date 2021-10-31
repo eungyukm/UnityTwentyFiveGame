@@ -19,7 +19,6 @@ public class ButtonGenerator : MonoBehaviour
 
     private int randomNumber;
 
-
     private void Awake()
     {
         Init();
@@ -57,7 +56,25 @@ public class ButtonGenerator : MonoBehaviour
     {
         Debug.Log("btn Index : " + btnIndex);
         Debug.Log("rand :" + rand);
-        btnArray[btnIndex].GetComponent<Image>().color = Color.red;
+
+        // 버튼 누를 시 InGameState로 변경
+        GameManager.Instance.GameStartState();
+
+        // 누른 숫자가 GameOver가 아닌지 확인
+        bool isGameOver = GameManager.Instance.IsGameOver(rand);
+        if(isGameOver)
+        {
+            GameManager.Instance.GameOverState();
+
+            // 버튼 색상 Green으로 변경
+            btnArray[btnIndex].GetComponent<Image>().color = Color.red;
+        }
+        else
+        {
+            // 버튼 색상 Green으로 변경
+            btnArray[btnIndex].GetComponent<Image>().color = Color.green;
+            GameManager.Instance.InCreasingGameNumber();
+        }
     }
 
     private void Init()
