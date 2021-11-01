@@ -57,9 +57,6 @@ public class ButtonGenerator : MonoBehaviour
         Debug.Log("btn Index : " + btnIndex);
         Debug.Log("rand :" + rand);
 
-        // 버튼 누를 시 InGameState로 변경
-        GameManager.Instance.GameStartState();
-
         // 누른 숫자가 GameOver가 아닌지 확인
         bool isGameOver = GameManager.Instance.IsGameOver(rand);
         if(isGameOver)

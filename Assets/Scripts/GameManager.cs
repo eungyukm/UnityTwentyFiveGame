@@ -29,25 +29,37 @@ public class GameManager : MonoBehaviour
 
     public GameState gameState = GameState.Menu;
 
+    [SerializeField] private UIManager uiManager;
+
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(TenTimer());
+
     }
 
     IEnumerator TenTimer()
     {
-        yield return new WaitForSeconds(10f);
+        int time = 0;
+        uiManager.SetTimer(time);
+        while (time < 10)
+        {
+            yield return new WaitForSeconds(1f);
+            time++;
+            uiManager.SetTimer(time);
+        }
+
         GameOverState();
     }
 
     public bool IsGameOver(int clickNumber)
     {
+        Debug.Log($"GameNuber :{gameNuber} 선택 : {clickNumber}");
         return gameNuber != clickNumber;
     }
 
     public void InCreasingGameNumber()
     {
+        Debug.Log("Game Nuber 증가!");
         gameNuber++;
 
         if(gameNuber == 25)
@@ -59,11 +71,14 @@ public class GameManager : MonoBehaviour
     public void GameStartState()
     {
         gameState = GameState.InGame;
+        gameNuber = 1;
+        StartCoroutine(TenTimer());
     }
 
     public void GameOverState()
     {
         gameState = GameState.GameOver;
+        uiManager.GameOver();
     }
 
     // Update is called once per frame
