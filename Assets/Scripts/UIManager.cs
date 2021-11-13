@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -42,6 +43,8 @@ public class UIManager : MonoBehaviour
     {
         gameOverUI.SetActive(false);
         GameManager.Instance.GameStartState();
+
+        SceneManager.LoadScene("TwentyFive");
     }
 
     public void GameOver()
